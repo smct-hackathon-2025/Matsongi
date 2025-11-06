@@ -1,9 +1,9 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 import home
-# from pages import survey
 import survey
 import recommand
+import chatbot
 
 sidebar_bg = """
 <style>
@@ -35,3 +35,5 @@ elif choice == "내 입맛 찾기":
     survey.run_survey()
 elif choice == "상품추천":
     recommand.run_recommend()
+elif choice == "챗봇":
+    chatbot.run_chatbot()
