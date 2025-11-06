@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import json
 
 def run_survey():
     # 스타일링
@@ -270,6 +271,53 @@ def run_survey():
         st.balloons()
         
         st.success("✅ 설문이 완료되었습니다!")
+
+        # JSON 데이터 생성 (추가된 부분)
+        # user_id는 세션에서 가져오거나 기본값 사용
+        user_id = st.session_state.get('user_id', 'user_1')
+        
+        # JSON 형식으로 데이터 구성
+        survey_result = {
+            "user_id": user_id,
+            "selected_products": st.session_state.selected_ramens,
+            "product_ratings": {
+                ramen: {
+                    "spicy": ratings["spicy"],
+                    "salty": ratings["salty"]
+                }
+                for ramen, ratings in st.session_state.ramen_ratings.items()
+            },
+            "taste_preferences": {
+                "spicy": {
+                    "capsaicin": st.session_state.preference_ratings.get('capsaicin', 3),
+                    "pepper": st.session_state.preference_ratings.get('piperine', 3),
+                    "garlic_onion": st.session_state.preference_ratings.get('garlic', 3)
+                },
+                "sweet": {
+                    "sugar": st.session_state.preference_ratings.get('sugar', 3),
+                    "sweetener": st.session_state.preference_ratings.get('sweetener', 3)
+                },
+                "salty": {
+                    "overall_saltiness": st.session_state.preference_ratings.get('saltiness', 3)
+                }
+            }
+        }
+        
+        # JSON 포맷팅
+        json_str = json.dumps(survey_result, ensure_ascii=False, indent=2)
+        
+        # JSON 표시 영역
+        st.markdown("---")
+        st.markdown("### 📋 설문 결과 JSON")
+        
+        # JSON 데이터 표시
+        st.code(json_str, language='json')
+        
+        # JSON 복사 버튼
+        # col_json1, col_json2, col_json3 = st.columns([1, 2, 1])
+        # with col_json2:
+        #     if st.button("📋 JSON 복사하기", use_container_width=True, type="secondary"):
+        #         st.info("💡 위의 JSON 코드 블록에서 마우스로 드래그하여 복사하거나, 코드 블록 우측 상단의 복사 버튼을 클릭해주세요!")
         
         # 결과 요약
         st.markdown("---")

@@ -1,7 +1,8 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 import home
-from pages import survey
+# from pages import survey
+import survey
 
 
 with st.sidebar:
