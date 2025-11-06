@@ -3,6 +3,7 @@ numpy
 pandas
 scikit-learn
 tqdm
+os
 
 #DL,NLP
 sentence-transformers
@@ -17,6 +18,10 @@ requests
 
 # (optional for .env usage)
 python-dotenv
+
+#streamlit
+streamlit>=1.28.0
+streamlit-option-menu
 
 #꼭 아래 명령어로 실행
 #pip install -r requirements.txt --index-url https://download.pytorch.org/whl/cpu
