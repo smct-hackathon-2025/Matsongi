@@ -1,0 +1,22 @@
+# Core
+numpy
+pandas
+scikit-learn
+tqdm
+
+#DL,NLP
+sentence-transformers
+transformers
+torch==2.3.1+cpu
+torchvision==0.18.1+cpu
+torchaudio==2.3.1+cpu
+
+# API / network
+openai
+requests
+
+# (optional for .env usage)
+python-dotenv
+
+#꼭 아래 명령어로 실행
+#pip install -r requirements.txt --index-url https://download.pytorch.org/whl/cpu
