@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import json
 import os 
+import subprocess
+import sys
 
 SAVE_DIR = "data/user"
 
@@ -274,7 +276,8 @@ def run_survey():
         st.balloons()
         
         st.success("✅ 설문이 완료되었습니다!")
-
+        
+        # ==================== Json 저장 ====================
         # JSON 데이터 생성 (추가된 부분)
         # user_id는 세션에서 가져오거나 기본값 사용
         user_id = st.session_state.get('user_id', 'user_1')
@@ -313,20 +316,42 @@ def run_survey():
         with open(save_path, "w", encoding="utf-8") as f:
             json.dump(survey_result, f, ensure_ascii=False, indent=2)
 
-        # JSON 표시 영역
-        st.markdown("---")
-        st.markdown("### 📋 설문 결과 JSON")
+        st.info(f"💾 설문 결과 저장 완료 → {save_path}")
         
-        # JSON 데이터 표시
-        st.code(json_str, language='json')
-        
-        # JSON 복사 버튼
-        # col_json1, col_json2, col_json3 = st.columns([1, 2, 1])
-        # with col_json2:
-        #     if st.button("📋 JSON 복사하기", use_container_width=True, type="secondary"):
-        #         st.info("💡 위의 JSON 코드 블록에서 마우스로 드래그하여 복사하거나, 코드 블록 우측 상단의 복사 버튼을 클릭해주세요!")
-        
-        # 결과 요약
+
+
+        # ==================== 벡터 생성 (user_vector_generator.py 실행) ====================
+        try:
+            st.info("🧠 사용자 미각 벡터 생성 중입니다... 잠시만 기다려주세요.")
+
+            # user_vector_generator.py 실행 (user_id 전달)
+            result = subprocess.run(
+                [sys.executable, "user_vector_generator.py", user_id],
+                capture_output=True,
+                text=True
+            )
+
+            if result.returncode == 0:
+                st.success("✅ 사용자 미각 벡터 생성 완료!")
+                st.text(result.stdout)
+            else:
+                st.error("❌ 벡터 생성 중 오류 발생")
+                st.code(result.stderr)
+
+        except Exception as e:
+            st.error(f"🚨 실행 실패: {e}")
+
+        # ==================== 결과 벡터 출력 ================
+        OUTPUT_PATH = f"data/user/{user_id}_taste_vector.json"
+        if os.path.exists(OUTPUT_PATH):
+            with open(OUTPUT_PATH, "r", encoding="utf-8") as f:
+                result_json = json.load(f)
+
+            st.markdown("---")
+            st.markdown("### 🎯 생성된 사용자 미각 벡터")
+            st.json(result_json)
+
+        # ==================== 결과 요약 ================
         st.markdown("---")
         st.markdown("### 📊 나의 입맛 프로필")
         

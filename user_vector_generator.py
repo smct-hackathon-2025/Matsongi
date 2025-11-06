@@ -56,4 +56,4 @@ output = {"user_id": survey["user_id"], "user_taste_vector": user_vector.tolist(
 with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
     json.dump(output, f, ensure_ascii=False, indent=2)
 
-print(f"✅ user_taste_vector.json saved → {OUTPUT_PATH}")
+print(f"user_taste_vector.json saved → {OUTPUT_PATH}")

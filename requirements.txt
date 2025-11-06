@@ -23,5 +23,5 @@ python-dotenv
 streamlit>=1.28.0
 streamlit-option-menu
 
-#꼭 아래 명령어로 실행
+#꼭 아래 명령어로 실행하세요!!!!!! (CPU 버전, GPU 버전으로 실행하면 에러 남)
 #pip install -r requirements.txt --index-url https://download.pytorch.org/whl/cpu
