@@ -4,10 +4,12 @@ import json
 import os 
 import subprocess
 import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from user_vector_generator import   generate_user_vector_from_resources
 
 SAVE_DIR = "data/user"
 
-def run_survey():
+def run_survey(model, flavorgraph, products, client, node_names, node_embeds):
     # 스타일링
     st.markdown("""
         <style>
@@ -321,25 +323,24 @@ def run_survey():
 
 
         # ==================== 벡터 생성 (user_vector_generator.py 실행) ====================
+        # 벡터 생성
         try:
-            st.info("🧠 사용자 미각 벡터 생성 중입니다... 잠시만 기다려주세요.")
-
-            # user_vector_generator.py 실행 (user_id 전달)
-            result = subprocess.run(
-                [sys.executable, "user_vector_generator.py", user_id],
-                capture_output=True,
-                text=True
-            )
-
-            if result.returncode == 0:
-                st.success("✅ 사용자 미각 벡터 생성 완료!")
-                st.text(result.stdout)
-            else:
-                st.error("❌ 벡터 생성 중 오류 발생")
-                st.code(result.stderr)
-
+            output_path = os.path.join(SAVE_DIR, f"{user_id}_taste_vector.json")
+            with st.spinner("🧠 사용자 미각 벡터 생성 중..."):
+                result = generate_user_vector_from_resources(
+                    user_id=user_id,
+                    survey_data=survey_result,
+                    products=products,
+                    model=model,
+                    flavorgraph=flavorgraph,
+                    client=client,
+                    node_names=node_names,
+                    node_embeds=node_embeds,
+                    output_path=output_path,
+                )
+            st.success("✅ 사용자 미각 벡터 생성 완료!")
         except Exception as e:
-            st.error(f"🚨 실행 실패: {e}")
+            st.error(f"🚨 벡터 생성 중 오류: {e}")
 
         # ==================== 결과 벡터 출력 ================
         OUTPUT_PATH = f"data/user/{user_id}_taste_vector.json"
