@@ -3,19 +3,29 @@ from streamlit_option_menu import option_menu
 import home
 # from pages import survey
 import survey
+import recommand
 
+sidebar_bg = """
+<style>
+[data-testid="stSidebar"] {
+    background-color: #20314e;
+}
+</style>
+"""
+st.markdown(sidebar_bg, unsafe_allow_html=True)
 
 with st.sidebar:
-    choice = option_menu("YOUME", ["시작", "내 입맛 찾기","내 레시피 만들기","설정"],
+    st.image("YOUME_logo.png", width=120)
+    choice = option_menu("", ["시작", "내 입맛 찾기","상품추천","챗봇"],
     icons=['bi bi-house-fill', 'bi bi-clipboard2-x-fill', 'bi bi-gear-fill','bi bi-graph-up'],
                         menu_icon="bi bi-pin-angle-fill", default_index=0,
                         styles={
-                            "container": {"padding": "5!important", "background-color": "#FFFFFF"},
-                            "icon": {"color": "black", "font-size": "15px"},
-                            "nav-link": {"font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},
-                            "nav-link-selected": {"background-color": "#8DBBD3"},
-                            "menu-title": {"font-size": "15px"},
-                            "menu-icon": {"font-size": "15px"}
+                            "container": {"padding": "5!important", "background-color": "#20314e", "border-radius": "0px!important" },
+                            "icon": {"color": "#fe9600", "font-size": "15px"},
+                            "nav-link": {"font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#2a3f5f", "color": "#ffffff"},
+                            "nav-link-selected": {"background-color": "#2a3f5f", "color": "#ffffff"},
+                            "menu-title": {"font-size": "15px", "color": "#ffffff"},
+                            "menu-icon": {"font-size": "15px", "color": "#fe9600"}
                         }
                         )
                         
@@ -23,3 +33,5 @@ if choice == "시작":
     home.run_home()
 elif choice == "내 입맛 찾기":
     survey.run_survey()
+elif choice == "상품추천":
+    recommand.run_recommend()

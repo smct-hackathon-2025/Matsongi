@@ -9,7 +9,7 @@ def run_survey():
         .survey-title {
             font-size: 36px;
             font-weight: bold;
-            color: #2C3E50;
+            color: #20314e;
             text-align: center;
             margin-bottom: 10px;
         }
@@ -20,14 +20,14 @@ def run_survey():
             margin-bottom: 30px;
         }
         .step-indicator {
-            background-color: #E8F4F8;
+            background-color: #fff5e6;
             padding: 15px;
             border-radius: 10px;
             text-align: center;
             margin-bottom: 30px;
             font-size: 16px;
             font-weight: bold;
-            color: #2C3E50;
+            color: #20314e;
         }
         .ramen-card {
             background-color: #FFFFFF;
@@ -38,8 +38,17 @@ def run_survey():
             transition: all 0.3s;
         }
         .ramen-card:hover {
-            border-color: #8DBBD3;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-color: #fe9600;
+            box-shadow: 0 4px 8px rgba(254, 150, 0, 0.3);
+        }
+        .stButton > button[kind="primary"] {
+            background-color: #20314e !important;
+            color: white !important;
+            border: none !important;
+        }
+        .stButton > button[kind="primary"]:hover {
+            background-color: #162338 !important;
+            border: none !important;
         }
         </style>
     """, unsafe_allow_html=True)

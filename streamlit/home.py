@@ -7,13 +7,13 @@ def run_home():
         .main-title {
             font-size: 48px;
             font-weight: bold;
-            color: #2C3E50;
+            color: #20314e;
             text-align: center;
             margin-bottom: 20px;
         }
         .subtitle {
             font-size: 24px;
-            color: #34495E;
+            color: #20314e;
             text-align: center;
             margin-bottom: 30px;
         }
@@ -25,17 +25,26 @@ def run_home():
             margin-bottom: 40px;
         }
         .highlight-box {
-            background-color: #E8F4F8;
-            border-left: 5px solid #8DBBD3;
+            background-color: #f0f4f8;
+            border-left: 5px solid #20314e;
             padding: 20px;
             border-radius: 10px;
             margin: 30px 0;
         }
         .feature-item {
             font-size: 16px;
-            color: #2C3E50;
+            color: #20314e;
             margin: 10px 0;
             padding-left: 20px;
+        }
+        .stButton > button[kind="primary"] {
+            background-color: #20314e !important;
+            color: white !important;
+            border: none !important;
+        }
+        .stButton > button[kind="primary"]:hover {
+            background-color: #162338 !important;
+            border: none !important;
         }
         </style>
     """, unsafe_allow_html=True)
