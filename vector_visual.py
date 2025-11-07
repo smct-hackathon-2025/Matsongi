@@ -116,7 +116,7 @@ if __name__ == "__main__":
 
     USER_VECTOR_PATH = os.path.join(data_dir, "./user/user_taste_vector.json")
     PRODUCTS_VECTOR_PATH = os.path.join(data_dir, "products_vector.json")
-    USER_SURVEY_PATH = os.path.join(data_dir, "./user/user_survey.json")
+    USER_SURVEY_PATH = os.path.join(data_dir, "./user/{user_id}_survey.json")
     MAP_OUTPUT_PATH = os.path.join(output_dir, "./user/user_taste_map.png")
 
     font_prop, bold_font_prop = load_korean_font()

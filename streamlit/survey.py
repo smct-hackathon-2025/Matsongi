@@ -6,6 +6,7 @@ import subprocess
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from user_vector_generator import   generate_user_vector_from_resources
+from taste_hex_map import plot_user_taste_hexagon, load_korean_font
 
 SAVE_DIR = "data/user"
 
@@ -58,6 +59,9 @@ def run_survey(model, flavorgraph, products, client, node_names, node_embeds):
             border: none !important;        }
         </style>
     """, unsafe_allow_html=True)
+
+    if "font_props" not in st.session_state:
+        st.session_state.font_props = load_korean_font()
     
     # 세션 상태 초기화
     if 'survey_step' not in st.session_state:
@@ -255,6 +259,80 @@ def run_survey(model, flavorgraph, products, client, node_names, node_embeds):
             key="pref_saltiness",
             value=st.session_state.preference_ratings.get('saltiness', 3)
         )
+
+         # 섹션 4: 풍미(고소함 / 느끼함)
+        st.markdown("---")
+        st.markdown("### 🧈 섹션 4: 풍미")
+        
+        st.markdown("**4-1. 고소함**")
+        st.caption("참기름, 볶은 깨, 견과류, 볶은 곡물 등에서 오는 구수·고소한 맛")
+        nuttiness = st.select_slider(
+            "고소함 선호도",
+            options=[1, 2, 3, 4, 5],
+            format_func=lambda x: ["전혀 선호 안함", "은은한 고소함", "적당히 고소함", "고소한 맛을 즐김", "진한 고소함을 선호"][x-1],
+            key="pref_nuttiness",
+            value=st.session_state.preference_ratings.get('nuttiness', 3)
+        )
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        st.markdown("**4-2. 느끼함(지방감/크리미함)**")
+        st.caption("유제품/치즈/버터/기름에서 오는 묵직한 풍미 (예: 크림라면, 치즈 토핑)")
+        richness = st.select_slider(
+            "느끼함(지방감) 선호도",
+            options=[1, 2, 3, 4, 5],
+            format_func=lambda x: ["전혀 선호 안함", "살짝 크리미한 정도", "적당히 크리미", "크리미함을 즐김", "진한 지방감/느끼함 선호"][x-1],
+            key="pref_richness",
+            value=st.session_state.preference_ratings.get('richness', 3)
+        )
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # 섹션 5: 신맛
+        st.markdown("---")
+        st.markdown("### 🍋 섹션 5: 신맛")
+        
+        st.markdown("**5-1. 신맛(새콤)**")
+        st.caption("식초/유자/라임 등 상큼한 산미 (예: 비빔라면 소스, 냉라면 소스)")
+        sourness = st.select_slider(
+            "새콤함 선호도",
+            options=[1, 2, 3, 4, 5],
+            format_func=lambda x: ["전혀 선호 안함", "살짝 상큼한 정도", "적당히 새콤한 정도", "새콤함을 즐김", "강한 산미를 선호"][x-1],
+            key="pref_sourness",
+            value=st.session_state.preference_ratings.get('sourness', 3)
+        )
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # 섹션 6: 쓴맛
+        st.markdown("---")
+        st.markdown("### ☕ 섹션 6: 쓴맛")
+        
+        st.markdown("**6-1. 쓴맛(쌉싸름)**")
+        st.caption("볶은 향신료, 진한 간장/된장에서 오는 여운")
+        bitterness = st.select_slider(
+            "쌉싸름함 선호도",
+            options=[1, 2, 3, 4, 5],
+            format_func=lambda x: ["전혀 선호 안함", "아주 미묘한 정도", "약간 쌉싸름", "쌉싸름함을 즐김", "진한 쌉싸름함을 선호"][x-1],
+            key="pref_bitterness",
+            value=st.session_state.preference_ratings.get('bitterness', 3)
+        )
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # 섹션 7: 향긋함
+        # st.markdown("---")
+        # st.markdown("### 🌿 섹션 7: 향긋함")
+        
+        # st.markdown("**7-1. 허브/향신(향긋함)**")
+        # st.caption("바질, 파슬리, 실란트로, 라임잎 등 허브 계열의 상큼/청량한 향")
+        # aromatic = st.select_slider(
+        #     "향긋함(허브) 선호도",
+        #     options=[1, 2, 3, 4, 5],
+        #     format_func=lambda x: ["전혀 선호 안함", "살짝 향만 나는 정도", "적당히 향긋", "허브 향을 즐김", "강한 허브 향을 선호"][x-1],
+        #     key="pref_aromatic",
+        #     value=st.session_state.preference_ratings.get('aromatic', 3)
+        # )
         
         st.markdown("<br><br>", unsafe_allow_html=True)
         
@@ -273,7 +351,12 @@ def run_survey(model, flavorgraph, products, client, node_names, node_embeds):
                     'garlic': garlic,
                     'sugar': sugar,
                     'sweetener': sweetener,
-                    'saltiness': saltiness
+                    'saltiness': saltiness,
+                    'nuttiness': nuttiness,
+                    'richness': richness,
+                    'sourness': sourness,
+                    'bitterness': bitterness,
+                    # 'aromatic': aromatic,
                 }
                 st.session_state.survey_step += 1
                 st.rerun()
@@ -315,7 +398,20 @@ def run_survey(model, flavorgraph, products, client, node_names, node_embeds):
                 },
                 "salty": {
                     "overall_saltiness": st.session_state.preference_ratings.get('saltiness', 3)
-                }
+                },
+                "savory": {
+                    "nuttiness": st.session_state.preference_ratings.get('nuttiness', 3),
+                    "richness": st.session_state.preference_ratings.get('richness', 3)
+                },
+                "sour": {
+                    "sourness": st.session_state.preference_ratings.get('sourness', 3)
+                },
+                "bitter": {
+                    "bitterness": st.session_state.preference_ratings.get('bitterness', 3)
+                },
+                # "aromatic": {
+                #     "aromatic": st.session_state.preference_ratings.get('aromatic', 3)
+                # },
             }
         }
         
@@ -364,7 +460,7 @@ def run_survey(model, flavorgraph, products, client, node_names, node_embeds):
         st.markdown("---")
         st.markdown("### 📊 나의 입맛 프로필")
         
-        col1, col2 = st.columns(2)
+        col1, col2, col3 = st.columns(3)
         
         with col1:
             st.markdown("**선택한 기준 라면**")
@@ -376,11 +472,34 @@ def run_survey(model, flavorgraph, products, client, node_names, node_embeds):
             pref = st.session_state.preference_ratings
             avg_spicy = (pref.get('capsaicin', 3) + pref.get('piperine', 3) + pref.get('garlic', 3)) / 3
             avg_sweet = (pref.get('sugar', 3) + pref.get('sweetener', 3)) / 2
-            
-            st.metric("🌶️ 매운맛", f"{avg_spicy:.1f}/5")
-            st.metric("🍭 단맛", f"{avg_sweet:.1f}/5")
-            st.metric("🧂 짠맛", f"{pref.get('saltiness', 3)}/5")
+            avg_saltiness = pref.get('saltiness', 3)
+            avg_sour = pref.get('sourness', 3)
+            avg_bitter = pref.get('bitterness', 3)
+            # avg_herb = pref.get('aromatic', 3)
+            avg_savory = (pref.get('nuttiness', 3) + pref.get('richness', 3)) / 2
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("🌶️ 매운맛", f"{avg_spicy:.1f}/5")
+                st.metric("🍋 신맛", f"{avg_sour:.1f}/5")
+                st.metric("🍭 단맛", f"{avg_sweet:.1f}/5")
+            with col2:
+                st.metric("🧂 짠맛", f"{avg_saltiness:.1f}/5")
+                st.metric("🧈 고소함", f"{avg_savory:.1f}/5")
+                st.metric("☕ 쓴맛", f"{avg_bitter:.1f}/5")
+                # st.metric("🌿 풍미", f"{avg_herb:.1f}/5")
         
+        with col3:
+            pref_source = {"taste_preferences": st.session_state.preference_ratings}
+            hex_fig, axis_scores = plot_user_taste_hexagon(
+                pref_source,
+                st.session_state.font_props[0],
+                st.session_state.font_props[1]
+            )
+
+            st.pyplot(hex_fig, use_container_width=True)
+            st.caption("HEXACO 프로필: " + ", ".join(f"{k} {v:.1f}" for k, v in axis_scores.items()))
+
         st.markdown("<br>", unsafe_allow_html=True)
         
         col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
