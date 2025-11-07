@@ -1,0 +1,36 @@
+{
+  "user_id": "user_1",
+  "selected_products": [
+    "신라면",
+    "진라면 (매운맛)",
+    "불닭볶음면 (오리지널)"
+  ],
+  "product_ratings": {
+    "신라면": {
+      "spicy": 4,
+      "salty": 3
+    },
+    "진라면 (매운맛)": {
+      "spicy": 3,
+      "salty": 4
+    },
+    "불닭볶음면": {
+      "spicy": 5,
+      "salty": 3
+    }
+  },
+  "taste_preferences": {
+    "spicy": {
+      "capsaicin": 4,
+      "pepper": 3,
+      "garlic_onion": 5
+    },
+    "sweet": {
+      "sugar": 3,
+      "sweetener": 2
+    },
+    "salty": {
+      "overall_saltiness": 4
+    }
+  }
+}

@@ -1,0 +1,27 @@
+# Core
+numpy
+pandas
+scikit-learn
+tqdm
+os
+
+#DL,NLP
+sentence-transformers
+transformers
+torch==2.3.1+cpu
+torchvision==0.18.1+cpu
+torchaudio==2.3.1+cpu
+
+# API / network
+openai
+requests
+
+# (optional for .env usage)
+python-dotenv
+
+#streamlit
+streamlit>=1.28.0
+streamlit-option-menu
+
+#꼭 아래 명령어로 실행하세요!!!!!! (CPU 버전, GPU 버전으로 실행하면 에러 남)
+#pip install -r requirements.txt --index-url https://download.pytorch.org/whl/cpu
