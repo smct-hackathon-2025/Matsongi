@@ -22,7 +22,7 @@ def load_korean_font():
     plt.rcParams["font.family"] = font_prop.get_name()
     plt.rcParams["axes.unicode_minus"] = False
 
-    print(f"✅ 한글 폰트 '{font_prop.get_name()}' 로드 완료")
+    print(f" 한글 폰트 '{font_prop.get_name()}' 로드 완료")
     return font_prop, bold_font_prop
 
 
@@ -53,19 +53,19 @@ def plot_user_taste_map(user_data, products, survey, font_prop, bold_font_prop, 
             product_names.append(p["name"])
 
     product_matrix = np.array(product_vectors)
-    print(f"✅ 유효한 상품 {len(product_names)}개 벡터 로드 완료")
+    print(f"유효한 상품 {len(product_names)}개 벡터 로드 완료")
 
     rated_cleaned_names = {clean_name(name) for name in survey["product_ratings"].keys()}
 
     # PCA 차원 축소
-    print(f"--- 🔄 PCA 차원 축소 시작 ({target_dim}D → 2D) ---")
+    print(f"--- PCA 차원 축소 시작 ({target_dim}D → 2D) ---")
     all_vectors = np.vstack([product_matrix, user_vector])
     pca = PCA(n_components=2)
     all_vectors_2d = pca.fit_transform(all_vectors)
 
     product_vectors_2d = all_vectors_2d[:-1]
     user_vector_2d = all_vectors_2d[-1]
-    print("✅ PCA 차원 축소 완료")
+    print("PCA 차원 축소 완료")
 
     print("--- 시각화 생성 중 ---")
     plt.style.use("seaborn-v0_8-darkgrid")
@@ -109,7 +109,7 @@ def plot_user_taste_map(user_data, products, survey, font_prop, bold_font_prop, 
         text.set_fontproperties(font_prop)
 
     plt.savefig(output_path, dpi=150, bbox_inches="tight")
-    print(f"💾 저장 완료 → {output_path}")
+    print(f" 저장 완료 → {output_path}")
 
 
 # 실행
