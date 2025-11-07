@@ -84,7 +84,7 @@ def run_survey(model, flavorgraph, products, client, node_names, node_embeds):
     # 단계별 진행 표시
     progress = st.session_state.survey_step / 7
     st.progress(progress)
-    st.markdown(f'<div class="step-indicator">🔄 진행 단계: {st.session_state.survey_step}/7</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="step-indicator">🔄 진행 단계: {st.session_state.survey_step}/5</div>', unsafe_allow_html=True)
     
     # ==================== 화면 1: 기준 라면 선택 ====================
     if st.session_state.survey_step == 1:

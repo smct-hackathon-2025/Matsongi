@@ -6,10 +6,14 @@ import os
 # 기본 경로 설정
 USER_DIR = "data/user"
 PRODUCT_VECTOR_PATH = "data/products_vector.json"
-NEW_PRODUCT_VECTOR = "data/new_products_vector.json"
+NEW_PRODUCT_VECTOR = "data/explore_products.json"
 
 def get_active_product_vector_path(use_new: bool = False) -> str:
     return NEW_PRODUCT_VECTOR if use_new else PRODUCT_VECTOR_PATH
+
+def _is_explore_path(path: str) -> bool:
+    """✅ ADDED: 경로가 explore_products.json 인지 확인"""
+    return os.path.abspath(path) == os.path.abspath(NEW_PRODUCT_VECTOR)
 
 
 def get_latest_user_vector_path():
@@ -62,10 +66,29 @@ def recommend_products(top_k=5, use_new: bool = False, product_vector_path: str 
     if product_vector_path is None:
         product_vector_path = get_active_product_vector_path(use_new=use_new)
 
-    """유저 벡터와 상품 벡터 간 코사인 유사도 계산"""
+    if _is_explore_path(product_vector_path) or use_new:
+        if not os.path.exists(product_vector_path):
+            raise FileNotFoundError(f"❌ 상품 벡터 파일을 찾을 수 없습니다: {product_vector_path}")
+        with open(product_vector_path, "r", encoding="utf-8") as f:
+            products = json.load(f)
+
+        results = []
+        for p in products[:top_k]:
+            sim_raw = p.get("similarity", None)
+            if sim_raw is None:
+                print(f"⚠️ explore 항목에 similarity 없음: {p.get('name', 'Unknown')}, 0.0으로 대체")
+                sim_val = 0.0
+            else:
+                sim_val = float(sim_raw)
+            results.append({
+                "name": p.get("name", ""),
+                "similarity": sim_val, 
+                "url": p.get("url", ""),
+                "img": p.get("img"),
+            })
+        return results
+
     user_vec, products = load_vectors(product_vector_path=product_vector_path)
-    print("🔍 첫 상품 키:", products[0].keys())
-    print("🔍 첫 상품 img:", products[0].get("img"))
 
     similarities = []
     for product in products:
