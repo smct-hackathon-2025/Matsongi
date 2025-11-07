@@ -1,41 +1,36 @@
 {
   "user_id": "user_1",
   "selected_products": [
-    "너구리 (얼큰한맛)",
-    "짜왕"
+    "신라면",
+    "안성탕면",
+    "불닭볶음면 (오리지널)"
   ],
   "product_ratings": {
-    "너구리 (얼큰한맛)": {
+    "신라면": {
       "spicy": 3,
       "salty": 3
     },
-    "짜왕": {
+    "안성탕면": {
+      "spicy": 3,
+      "salty": 3
+    },
+    "불닭볶음면 (오리지널)": {
       "spicy": 3,
       "salty": 3
     }
   },
   "taste_preferences": {
     "spicy": {
-      "capsaicin": 4,
+      "capsaicin": 3,
       "pepper": 3,
-      "garlic_onion": 4
+      "garlic_onion": 3
     },
     "sweet": {
-      "sugar": 1,
-      "sweetener": 1
+      "sugar": 3,
+      "sweetener": 3
     },
     "salty": {
-      "overall_saltiness": 2
-    },
-    "savory": {
-      "nuttiness": 5,
-      "richness": 5
-    },
-    "sour": {
-      "sourness": 4
-    },
-    "bitter": {
-      "bitterness": 2
+      "overall_saltiness": 3
     }
   }
 }
