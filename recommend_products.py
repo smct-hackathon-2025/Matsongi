@@ -6,6 +6,11 @@ import os
 # 기본 경로 설정
 USER_DIR = "data/user"
 PRODUCT_VECTOR_PATH = "data/products_vector.json"
+NEW_PRODUCT_VECTOR = "data/new_products_vector.json"
+
+def get_active_product_vector_path(use_new: bool = False) -> str:
+    return NEW_PRODUCT_VECTOR if use_new else PRODUCT_VECTOR_PATH
+
 
 def get_latest_user_vector_path():
     """user 디렉토리 내 최신 taste_vector 파일 경로 반환"""
@@ -21,12 +26,18 @@ def get_latest_user_vector_path():
     return os.path.join(USER_DIR, files[0])
 
 
-def load_vectors():
+def load_vectors(product_vector_path: str = None):
     """유저 벡터와 상품 벡터 로드"""
     user_vec_path = get_latest_user_vector_path()
 
     if not user_vec_path:
         raise FileNotFoundError("❌ user_taste_vector 파일이 없습니다. Streamlit 설문 후 다시 시도해주세요.")
+    
+    if product_vector_path is None:
+        product_vector_path = NEW_PRODUCT_VECTOR
+    
+    if not os.path.exists(product_vector_path):
+        raise FileNotFoundError(f"❌ 상품 벡터 파일을 찾을 수 없습니다: {product_vector_path}")
 
     with open(user_vec_path, "r", encoding="utf-8") as f:
         user_data = json.load(f)
@@ -47,9 +58,12 @@ def load_vectors():
     return user_vec, products
 
 
-def recommend_products(top_k=5):
+def recommend_products(top_k=5, use_new: bool = False, product_vector_path: str = None):
+    if product_vector_path is None:
+        product_vector_path = get_active_product_vector_path(use_new=use_new)
+
     """유저 벡터와 상품 벡터 간 코사인 유사도 계산"""
-    user_vec, products = load_vectors()
+    user_vec, products = load_vectors(product_vector_path=product_vector_path)
     print("🔍 첫 상품 키:", products[0].keys())
     print("🔍 첫 상품 img:", products[0].get("img"))
 
