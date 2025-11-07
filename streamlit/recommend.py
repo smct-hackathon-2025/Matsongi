@@ -6,6 +6,7 @@ import os
 import requests
 from io import BytesIO
 from urllib.parse import unquote
+import slackbot
 
 
 user_id = st.session_state.get('user_id', 'user_1')
@@ -237,34 +238,40 @@ def run_recommend():
                     unsafe_allow_html=True,
                 )
 
-                # ✅ 버튼 영역 (Streamlit 컬럼 정렬)
+                # ===== 구매 버튼 (Slack + 링크 표시) =====
                 col1, col2, col3 = st.columns([1, 2, 1])
                 with col2:
-                    st.markdown(
-                        f"""
-                        <a href="{product['url']}" target="_blank"
-                        style="background:#fe9600;color:white;padding:10px 24px;
-                                border-radius:25px;text-decoration:none;font-weight:bold;
-                                display:inline-block;transition:all 0.3s;">🛒 구매하러 가기</a>
-                        """,
-                        unsafe_allow_html=True,
-                    )
+                    button_key = f"buy_{name}"
+    
+                # 버튼이 클릭되면...
+                    if st.button("♥️ 관심 있어요", key=button_key):
+                        # 1️⃣ Slack 전송 (정상 작동)
+                        slackbot.send_slack_message(f"🛍️ 사용자가 '{name}' 구매 버튼 클릭! 링크: {product['url']}")
+
+                        # 2️⃣ JS 대신 HTML 링크(<a> 태그)를 표시
+                        st.markdown(f'''
+                            <a href="{product['url']}" target="_blank" style="text-decoration: none;">
+                            <button style="
+                                width: 50%; 
+                                padding: 0.5rem 1rem; 
+                                border-radius: 0.375rem; 
+                                border: 1px solid gray; 
+                                background-color: white; 
+                                color: black; 
+                                font-size: 1rem; 
+                                font-weight: 500; 
+                                cursor: pointer;
+                                transition: background-color 0.2s;
+                            ">
+                                🛒 구매하러 가기
+                            </button>
+
+                        </a>
+                        ''', unsafe_allow_html=True)
+
 
                 st.markdown("")  # 간격
 
-                col_like = st.columns([3, 1, 3])[1]
-                with col_like:
-                    if st.button("❤️", key=f"like_{name}"):
-                        msg = update_on_like(USER_ID, name, alpha=0.3)
-                        st.toast(msg)
-
-        # ===== 최근 좋아요 표시 =====
-        if "last_liked" in st.session_state:
-            st.markdown(
-                f"<p style='text-align:center;color:#fe9600;font-weight:bold;'>"
-                f"💖 최근 좋아요한 상품: {st.session_state['last_liked']}</p>",
-                unsafe_allow_html=True,
-            )
 
         # ===== 하단 버튼 =====
         st.markdown("---")
