@@ -112,12 +112,12 @@ def plot_user_taste_map(user_data, products, survey, font_prop, bold_font_prop, 
 if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(base_dir, "./data")
-    output_dir = os.path.join(base_dir, ".")
+    output_dir = os.path.join(base_dir, "./data")
 
     USER_VECTOR_PATH = os.path.join(data_dir, "./user/user_taste_vector.json")
     PRODUCTS_VECTOR_PATH = os.path.join(data_dir, "products_vector.json")
     USER_SURVEY_PATH = os.path.join(data_dir, "./user/user_survey.json")
-    MAP_OUTPUT_PATH = os.path.join(output_dir, "user_taste_map.png")
+    MAP_OUTPUT_PATH = os.path.join(output_dir, "./user/user_taste_map.png")
 
     font_prop, bold_font_prop = load_korean_font()
     user_data = load_json(USER_VECTOR_PATH)
