@@ -17,6 +17,12 @@ import slackbot
 user_id = st.session_state.get('user_id', 'user_1')
 USER_ID = user_id
 
+if "show_results" not in st.session_state:
+    st.session_state.show_results = False
+
+def _reset_results():
+    st.session_state.show_results = False
+    st.session_state.recommendations = []
 
 def run_recommend():
 
@@ -117,17 +123,24 @@ def run_recommend():
 
     use_new = st.toggle(
         "도전 모드", 
-        value=True,    
+        value=True,
+        key="use_new",
+        on_change=_reset_results    
     )
 
-    active_product_vec = get_active_product_vector_path(use_new=use_new)  # ✅ CHANGED(신규가 기본)
+    active_product_vec = get_active_product_vector_path(use_new=use_new) 
     st.caption(f"현재 선택된 상품 벡터: `{os.path.basename(active_product_vec)}`")
 
     # 추천 실행 버튼
     if st.button("✨ 추천 결과 불러오기", use_container_width=True):
         with st.spinner("개인 맞춤형 라면 추천을 생성 중입니다... 🍜"):
             try:
-                recommendations = recommend_products(top_k=5)
+                recommendations = recommend_products(
+                    top_k=5,
+                    use_new=use_new,                         
+                    product_vector_path=active_product_vec, 
+                )
+                # 유사도 정렬된 결과를 랭킹
                 st.session_state.recommendations = [
                     {**p, "rank": i + 1} for i, p in enumerate(recommendations)
                 ]
@@ -183,24 +196,26 @@ def run_recommend():
                     )
                     button_key = f"buy_button_{rank}_{name.replace(' ', '_')}"
 
-                    if st.button("♥️ 관심 있어요!", key=button_key, use_container_width=True):
-                        try:
-                            slackbot.send_slack_message(f"🛍️ 사용자가 '{name}' 구매 버튼 클릭! 링크: {product['url']}")
-                        except Exception as e:
-                            st.warning(f"Slack 알림 전송 실패: {e}")
-                        st.markdown(
-                            f"""
-                            <div style="text-align:center; margin-top: 10px;">
-                                <a href="{product['url']}" target="_blank"
-                                   style="background:#fe9600;color:white;padding:10px 24px;
-                                          border-radius:25px;text-decoration:none;font-weight:bold;
-                                          display:inline-block;transition:all 0.3s;">
-                                    🛒 구매하러 가기
-                                </a>
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
+                    col1, col2, col3 = st.columns([1, 2, 1])
+                    with col2:
+                        if st.button("♥️ 관심 있어요!", key=button_key):
+                            try:
+                                slackbot.send_slack_message(f"🛍️ 사용자가 '{name}' 구매 버튼 클릭! 링크: {product['url']}")
+                            except Exception as e:
+                                st.warning(f"Slack 알림 전송 실패: {e}")
+                            st.markdown(
+                                f"""
+                                <div style="text-align:center; margin-top: 10px;">
+                                    <a href="{product['url']}" target="_blank"
+                                    style="background:#fe9600;color:white;padding:10px 24px;
+                                            border-radius:25px;text-decoration:none;font-weight:bold;
+                                            display:inline-block;transition:all 0.3s;">
+                                        🛒 구매하러 가기
+                                    </a>
+                                </div>
+                                """,
+                                unsafe_allow_html=True,
+                            )
 
                 with col_img:
                     if img_url:
@@ -217,7 +232,6 @@ def run_recommend():
 
 
         # ===== 하단 버튼 =====
-        st.markdown("---")
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
             if st.button("🔄 다시 추천받기", use_container_width=True):
