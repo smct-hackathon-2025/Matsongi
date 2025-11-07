@@ -4,7 +4,8 @@ from recommend_products import recommend_products, get_latest_user_vector_path
 from update_user_vector import update_on_like
 import os
 
-USER_ID = "user_1"
+user_id = st.session_state.get('user_id', 'user_1')
+USER_ID = user_id
 
 
 def run_recommend():

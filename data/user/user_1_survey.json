@@ -1,26 +1,41 @@
 {
   "user_id": "user_1",
   "selected_products": [
-    "짜파게티"
+    "너구리 (얼큰한맛)",
+    "짜왕"
   ],
   "product_ratings": {
-    "짜파게티": {
+    "너구리 (얼큰한맛)": {
+      "spicy": 3,
+      "salty": 3
+    },
+    "짜왕": {
       "spicy": 3,
       "salty": 3
     }
   },
   "taste_preferences": {
     "spicy": {
-      "capsaicin": 3,
+      "capsaicin": 4,
       "pepper": 3,
-      "garlic_onion": 3
+      "garlic_onion": 4
     },
     "sweet": {
-      "sugar": 3,
-      "sweetener": 3
+      "sugar": 1,
+      "sweetener": 1
     },
     "salty": {
-      "overall_saltiness": 3
+      "overall_saltiness": 2
+    },
+    "savory": {
+      "nuttiness": 5,
+      "richness": 5
+    },
+    "sour": {
+      "sourness": 4
+    },
+    "bitter": {
+      "bitterness": 2
     }
   }
 }
