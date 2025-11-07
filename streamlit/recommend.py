@@ -110,48 +110,48 @@ def run_recommend():
     st.info(f"✅ 현재 사용 중인 사용자 벡터 파일: `{os.path.basename(user_vec_path)}`")
 
     # vector_visual.py 돌린 후 결과 이미지 삽입
-    st.markdown("### 📊 나의 맛 취향 벡터 시각화")
+    # st.markdown("### 📊 나의 맛 취향 벡터 시각화")
 
-    # vector_visual.py 실행
-    vector_script_path = "vector_visual.py"
-    vector_image_path = "./data/user/user_taste_map.png"
+    # # vector_visual.py 실행
+    # vector_script_path = "vector_visual.py"
+    # vector_image_path = "./data/user/user_taste_map.png"
 
-    # 이전 이미지가 있다면 삭제
-    if os.path.exists(vector_image_path):
-        os.remove(vector_image_path)
+    # # 이전 이미지가 있다면 삭제
+    # if os.path.exists(vector_image_path):
+    #     os.remove(vector_image_path)
 
-    try:
-        # vector_visual.py 실행
-        import subprocess
-        result = subprocess.run(
-            ["python", vector_script_path],
-            capture_output=True,
-            text=True,
-            timeout=30
-        )
+    # try:
+    #     # vector_visual.py 실행
+    #     import subprocess
+    #     result = subprocess.run(
+    #         ["python", vector_script_path],
+    #         capture_output=True,
+    #         text=True,
+    #         timeout=30
+    #     )
         
-        if result.returncode == 0:
-            # 이미지 생성 성공
-            if os.path.exists(vector_image_path):
-                st.success("✅ 벡터 시각화 생성이 완료되었습니다!")
-                st.image(vector_image_path, use_container_width=True)
-            else:
-                st.error("❌ 스크립트는 실행되었으나 이미지 파일이 생성되지 않았습니다.")
-        else:
-            st.error(f"❌ 스크립트 실행 실패:\n{result.stderr}")
+    #     if result.returncode == 0:
+    #         # 이미지 생성 성공
+    #         if os.path.exists(vector_image_path):
+    #             st.success("✅ 벡터 시각화 생성이 완료되었습니다!")
+    #             st.image(vector_image_path, use_container_width=True)
+    #         else:
+    #             st.error("❌ 스크립트는 실행되었으나 이미지 파일이 생성되지 않았습니다.")
+    #     else:
+    #         st.error(f"❌ 스크립트 실행 실패:\n{result.stderr}")
             
-    except subprocess.TimeoutExpired:
-        st.error("❌ 스크립트 실행 시간 초과 (30초)")
-    except FileNotFoundError:
-        st.error(f"❌ {vector_script_path} 파일을 찾을 수 없습니다.")
-    except Exception as e:
-        st.error(f"❌ 오류 발생: {str(e)}")
-        # 에러 발생 시에도 기존 이미지가 있다면 표시
-        if os.path.exists(vector_image_path):
-            st.warning("⚠️ 최신 이미지를 생성하지 못했지만, 이전 이미지를 표시합니다.")
-            st.image(vector_image_path, caption="나의 맛 취향 벡터 시각화 (이전 버전)", use_container_width=True)
+    # except subprocess.TimeoutExpired:
+    #     st.error("❌ 스크립트 실행 시간 초과 (30초)")
+    # except FileNotFoundError:
+    #     st.error(f"❌ {vector_script_path} 파일을 찾을 수 없습니다.")
+    # except Exception as e:
+    #     st.error(f"❌ 오류 발생: {str(e)}")
+    #     # 에러 발생 시에도 기존 이미지가 있다면 표시
+    #     if os.path.exists(vector_image_path):
+    #         st.warning("⚠️ 최신 이미지를 생성하지 못했지만, 이전 이미지를 표시합니다.")
+    #         st.image(vector_image_path, caption="나의 맛 취향 벡터 시각화 (이전 버전)", use_container_width=True)
 
-    st.markdown("---")
+    # st.markdown("---")
 
     # 추천 실행 버튼
     if st.button("✨ 추천 결과 불러오기", use_container_width=True):
@@ -171,19 +171,19 @@ def run_recommend():
                 st.stop()
 
      # ✅ 좋아요 반영 강도 슬라이더
-    st.markdown("### 💡 좋아요 반영 강도 설정")
-    alpha = st.slider(
-        "좋아요를 누를 때, 해당 제품의 취향이 얼마나 반영될까요?",
-        min_value=0.05,
-        max_value=0.35,
-        value=0.2,      # 기본값 (중간값 정도)
-        step=0.05,
-        help="값이 높을수록 새로 좋아한 제품의 맛이 강하게 반영됩니다."
-    )
+    # st.markdown("### 💡 좋아요 반영 강도 설정")
+    # alpha = st.slider(
+    #     "좋아요를 누를 때, 해당 제품의 취향이 얼마나 반영될까요?",
+    #     min_value=0.05,
+    #     max_value=0.35,
+    #     value=0.2,      # 기본값 (중간값 정도)
+    #     step=0.05,
+    #     help="값이 높을수록 새로 좋아한 제품의 맛이 강하게 반영됩니다."
+    # )
 
     # 추천 결과 표시
     if "recommendations" in st.session_state and st.session_state.recommendations:
-        st.markdown("<h2 style='text-align:center;'>🏆 개인 취향과 가장 유사한 제품 TOP 5</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align:center; margin-bottom: 25px;'>🏆 개인 취향과 가장 유사한 제품 TOP 5</h2>", unsafe_allow_html=True)
 
         for product in st.session_state.recommendations:
             img_url = product.get("img", None)
@@ -191,72 +191,71 @@ def run_recommend():
             name = product["name"]
             sim = product["similarity"]
 
-            # 카드 컨테이너
             with st.container():
-                st.markdown(
-                    f"""
-                    <div style="
-                        background-color: #FFFFFF;
-                        border: 2px solid #E0E0E0;
-                        border-radius: 20px;
-                        padding: 20px;
-                        margin: 20px auto;
-                        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-                        text-align: center;
-                        width: 380px;
-                    ">
-                        <div style="margin-bottom:10px;">
-                            <span style="background:#20314e;color:white;
-                                font-weight:bold;padding:6px 14px;
-                                border-radius:15px;">TOP {rank}</span>
-                            <span style="background:#fff5e6;color:#fe9600;
-                                font-weight:bold;padding:6px 12px;
-                                border-radius:15px;margin-left:8px;">
-                                유사도 {sim:.1%}
-                            </span>
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-
-                # ✅ 이미지 중앙 표시
-                if img_url:
-                    try:
-                        decoded_url = unquote(img_url)
-                        response = requests.get(decoded_url, timeout=5)
-                        if response.status_code == 200:
-                            st.image(BytesIO(response.content), width=250, caption=product["name"])
-
-                    except Exception:
-                        st.warning("⚠️ 이미지 불러오기 실패")
-
-                # ✅ 제품명
-                st.markdown(
-                    f"<div style='font-size:20px;font-weight:bold;color:#20314e;margin:10px 0;'>{name}</div>",
-                    unsafe_allow_html=True,
-                )
-
-                # ✅ 버튼 영역 (Streamlit 컬럼 정렬)
-                col1, col2, col3 = st.columns([1, 2, 1])
-                with col2:
+                # 상단: 카드 정보 + 이미지
+                col_info, col_img = st.columns([1, 1], vertical_alignment="center")
+                with col_info:
                     st.markdown(
                         f"""
-                        <a href="{product['url']}" target="_blank"
-                        style="background:#fe9600;color:white;padding:10px 24px;
-                                border-radius:25px;text-decoration:none;font-weight:bold;
-                                display:inline-block;transition:all 0.3s;">🛒 구매하러 가기</a>
+                        <div style="
+                            background-color: #FFFFFF;
+                            border: 2px solid #E0E0E0;
+                            border-radius: 20px;
+                            padding: 20px;
+                            margin: 20px auto;
+                            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+                            text-align: center;
+                            width: 260px;
+                        ">
+                            <div style="margin-bottom:10px;">
+                                <span style="background:#20314e;color:white;
+                                    font-weight:bold;padding:6px 14px;
+                                    border-radius:15px;">TOP {rank}</span>
+                                <span style="background:#fff5e6;color:#fe9600;
+                                    font-weight:bold;padding:6px 12px;
+                                    border-radius:15px;margin-left:8px;">
+                                    유사도 {sim:.1%}
+                                </span>
+                            </div>
+                            <div style='font-size:20px;font-weight:bold;color:#20314e;margin-top:10px;'>{name}</div>
+                        </div>
                         """,
                         unsafe_allow_html=True,
                     )
+                    st.markdown(
+                        f"""
+                        <div style="text-align:center;">
+                            <a href="{product['url']}" target="_blank"
+                            style="background:#fe9600;color:white;padding:10px 24px;
+                                    border-radius:25px;text-decoration:none;font-weight:bold;
+                                    display:inline-block;transition:all 0.3s;">
+                                    🛒 구매하러 가기
+                            </a>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                    # 좋아요 버튼 (가운데 정렬)
+                    st.markdown("<div style='height:10px;'></div>", unsafe_allow_html=True)
+                    like_col = st.columns([3, 1, 3])[1]
+                    with like_col:
+                        if st.button("좋아요❤️", key=f"like_{name}"):
+                            msg = update_on_like(USER_ID, name, alpha=0.3)
+                            st.toast(msg)
 
-                st.markdown("")  # 간격
+                with col_img:
+                    if img_url:
+                        try:
+                            decoded_url = unquote(img_url)
+                            response = requests.get(decoded_url, timeout=5)
+                            if response.status_code == 200:
+                                st.image(BytesIO(response.content), width=250)
+                        except Exception:
+                            st.warning("⚠️ 이미지 불러오기 실패")
 
-                col_like = st.columns([3, 1, 3])[1]
-                with col_like:
-                    if st.button("❤️", key=f"like_{name}"):
-                        msg = update_on_like(USER_ID, name, alpha=0.3)
-                        st.toast(msg)
+                # 구분선
+                st.markdown("<hr style='margin:20px 0;border:1px solid #e0e0e0;'>", unsafe_allow_html=True)
+
 
         # ===== 최근 좋아요 표시 =====
         if "last_liked" in st.session_state:
