@@ -104,6 +104,50 @@ def run_recommend():
 
     st.info(f"✅ 현재 사용 중인 사용자 벡터 파일: `{os.path.basename(user_vec_path)}`")
 
+    # vector_visual.py 돌린 후 결과 이미지 삽입
+    st.markdown("### 📊 나의 맛 취향 벡터 시각화")
+
+    # vector_visual.py 실행
+    vector_script_path = "vector_visual.py"
+    vector_image_path = "./data/user/user_taste_map.png"
+
+    # 이전 이미지가 있다면 삭제
+    if os.path.exists(vector_image_path):
+        os.remove(vector_image_path)
+
+    try:
+        # vector_visual.py 실행
+        import subprocess
+        result = subprocess.run(
+            ["python", vector_script_path],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        
+        if result.returncode == 0:
+            # 이미지 생성 성공
+            if os.path.exists(vector_image_path):
+                st.success("✅ 벡터 시각화 생성이 완료되었습니다!")
+                st.image(vector_image_path, use_container_width=True)
+            else:
+                st.error("❌ 스크립트는 실행되었으나 이미지 파일이 생성되지 않았습니다.")
+        else:
+            st.error(f"❌ 스크립트 실행 실패:\n{result.stderr}")
+            
+    except subprocess.TimeoutExpired:
+        st.error("❌ 스크립트 실행 시간 초과 (30초)")
+    except FileNotFoundError:
+        st.error(f"❌ {vector_script_path} 파일을 찾을 수 없습니다.")
+    except Exception as e:
+        st.error(f"❌ 오류 발생: {str(e)}")
+        # 에러 발생 시에도 기존 이미지가 있다면 표시
+        if os.path.exists(vector_image_path):
+            st.warning("⚠️ 최신 이미지를 생성하지 못했지만, 이전 이미지를 표시합니다.")
+            st.image(vector_image_path, caption="나의 맛 취향 벡터 시각화 (이전 버전)", use_container_width=True)
+
+    st.markdown("---")
+
     # 추천 실행 버튼
     if st.button("✨ 추천 결과 불러오기", use_container_width=True):
         with st.spinner("개인 맞춤형 라면 추천을 생성 중입니다... 🍜"):

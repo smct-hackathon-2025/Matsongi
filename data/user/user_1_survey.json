@@ -1,0 +1,26 @@
+{
+  "user_id": "user_1",
+  "selected_products": [
+    "짜파게티"
+  ],
+  "product_ratings": {
+    "짜파게티": {
+      "spicy": 3,
+      "salty": 3
+    }
+  },
+  "taste_preferences": {
+    "spicy": {
+      "capsaicin": 3,
+      "pepper": 3,
+      "garlic_onion": 3
+    },
+    "sweet": {
+      "sugar": 3,
+      "sweetener": 3
+    },
+    "salty": {
+      "overall_saltiness": 3
+    }
+  }
+}
