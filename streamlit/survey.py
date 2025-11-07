@@ -359,6 +359,8 @@ def run_survey(model, flavorgraph, products, client, node_names, node_embeds):
             st.markdown("---")
             st.markdown("### 🎯 생성된 사용자 미각 벡터")
             st.json(result_json)
+            
+            st.session_state.user_vector = result_json.get("user_taste_vector")
 
         # ==================== 결과 요약 ================
         st.markdown("---")
