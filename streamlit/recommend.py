@@ -3,8 +3,13 @@ import streamlit as st
 from recommend_products import recommend_products, get_latest_user_vector_path
 from update_user_vector import update_on_like
 import os
+import requests
+from io import BytesIO
+from urllib.parse import unquote
 
-USER_ID = "user_1"
+
+user_id = st.session_state.get('user_id', 'user_1')
+USER_ID = user_id
 
 
 def run_recommend():
@@ -104,6 +109,50 @@ def run_recommend():
 
     st.info(f"✅ 현재 사용 중인 사용자 벡터 파일: `{os.path.basename(user_vec_path)}`")
 
+    # vector_visual.py 돌린 후 결과 이미지 삽입
+    st.markdown("### 📊 나의 맛 취향 벡터 시각화")
+
+    # vector_visual.py 실행
+    vector_script_path = "vector_visual.py"
+    vector_image_path = "./data/user/user_taste_map.png"
+
+    # 이전 이미지가 있다면 삭제
+    if os.path.exists(vector_image_path):
+        os.remove(vector_image_path)
+
+    try:
+        # vector_visual.py 실행
+        import subprocess
+        result = subprocess.run(
+            ["python", vector_script_path],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        
+        if result.returncode == 0:
+            # 이미지 생성 성공
+            if os.path.exists(vector_image_path):
+                st.success("✅ 벡터 시각화 생성이 완료되었습니다!")
+                st.image(vector_image_path, use_container_width=True)
+            else:
+                st.error("❌ 스크립트는 실행되었으나 이미지 파일이 생성되지 않았습니다.")
+        else:
+            st.error(f"❌ 스크립트 실행 실패:\n{result.stderr}")
+            
+    except subprocess.TimeoutExpired:
+        st.error("❌ 스크립트 실행 시간 초과 (30초)")
+    except FileNotFoundError:
+        st.error(f"❌ {vector_script_path} 파일을 찾을 수 없습니다.")
+    except Exception as e:
+        st.error(f"❌ 오류 발생: {str(e)}")
+        # 에러 발생 시에도 기존 이미지가 있다면 표시
+        if os.path.exists(vector_image_path):
+            st.warning("⚠️ 최신 이미지를 생성하지 못했지만, 이전 이미지를 표시합니다.")
+            st.image(vector_image_path, caption="나의 맛 취향 벡터 시각화 (이전 버전)", use_container_width=True)
+
+    st.markdown("---")
+
     # 추천 실행 버튼
     if st.button("✨ 추천 결과 불러오기", use_container_width=True):
         with st.spinner("개인 맞춤형 라면 추천을 생성 중입니다... 🍜"):
@@ -113,6 +162,7 @@ def run_recommend():
                     {**p, "rank": i + 1} for i, p in enumerate(recommendations)
                 ]
                 st.success("✅ 추천이 완료되었습니다!")
+
             except FileNotFoundError as e:
                 st.error(str(e))
                 st.stop()
@@ -136,44 +186,77 @@ def run_recommend():
         st.markdown("<h2 style='text-align:center;'>🏆 개인 취향과 가장 유사한 제품 TOP 5</h2>", unsafe_allow_html=True)
 
         for product in st.session_state.recommendations:
-            like_btn_key = f"like_{product['name'].replace('[','').replace(']','').replace(' ','_')}"
+            img_url = product.get("img", None)
+            rank = product["rank"]
+            name = product["name"]
+            sim = product["similarity"]
 
-            # 카드 영역
-            st.markdown(f"""
-                <div style="text-align: center;">
-                    <div class="product-card" style="display: inline-block; width: 300px; text-align: center;">
-                        <div>
-                            <span class="product-rank">TOP {product['rank']}</span>
-                            <span class="similarity-score">유사도: {product['similarity']:.1%}</span>
+            # 카드 컨테이너
+            with st.container():
+                st.markdown(
+                    f"""
+                    <div style="
+                        background-color: #FFFFFF;
+                        border: 2px solid #E0E0E0;
+                        border-radius: 20px;
+                        padding: 20px;
+                        margin: 20px auto;
+                        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+                        text-align: center;
+                        width: 380px;
+                    ">
+                        <div style="margin-bottom:10px;">
+                            <span style="background:#20314e;color:white;
+                                font-weight:bold;padding:6px 14px;
+                                border-radius:15px;">TOP {rank}</span>
+                            <span style="background:#fff5e6;color:#fe9600;
+                                font-weight:bold;padding:6px 12px;
+                                border-radius:15px;margin-left:8px;">
+                                유사도 {sim:.1%}
+                            </span>
                         </div>
-                        <div class="product-name">{product['name']}</div>
                     </div>
-                </div>
-            """, unsafe_allow_html=True)
+                    """,
+                    unsafe_allow_html=True,
+                )
 
+                # ✅ 이미지 중앙 표시
+                if img_url:
+                    try:
+                        decoded_url = unquote(img_url)
+                        response = requests.get(decoded_url, timeout=5)
+                        if response.status_code == 200:
+                            st.image(BytesIO(response.content), width=250, caption=product["name"])
 
-            col_spacer1, col1, col2, col_spacer2 = st.columns([4, 3, 2, 3])
+                    except Exception:
+                        st.warning("⚠️ 이미지 불러오기 실패")
 
-            with col1:
-                st.markdown(f"""
-                    <a href="{product['url']}" target="_blank" class="buy-button" style="
-                        background:#fe9600;
-                        color:white;
-                        padding:10px 20px;
-                        border-radius:25px;
-                        text-decoration:none;
-                        font-weight:bold;
-                        display:inline-block;
-                        transition:all 0.3s;
-                        text-align:center;">
-                        🛒 구매하러 가기
-                    </a>
-                """, unsafe_allow_html=True)
+                # ✅ 제품명
+                st.markdown(
+                    f"<div style='font-size:20px;font-weight:bold;color:#20314e;margin:10px 0;'>{name}</div>",
+                    unsafe_allow_html=True,
+                )
 
-            with col2:
-                if st.button("❤️", key=f"like_{product['name']}"):
-                    msg = update_on_like(USER_ID, product["name"], alpha=0.3)
-                    st.toast(msg)
+                # ✅ 버튼 영역 (Streamlit 컬럼 정렬)
+                col1, col2, col3 = st.columns([1, 2, 1])
+                with col2:
+                    st.markdown(
+                        f"""
+                        <a href="{product['url']}" target="_blank"
+                        style="background:#fe9600;color:white;padding:10px 24px;
+                                border-radius:25px;text-decoration:none;font-weight:bold;
+                                display:inline-block;transition:all 0.3s;">🛒 구매하러 가기</a>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+
+                st.markdown("")  # 간격
+
+                col_like = st.columns([3, 1, 3])[1]
+                with col_like:
+                    if st.button("❤️", key=f"like_{name}"):
+                        msg = update_on_like(USER_ID, name, alpha=0.3)
+                        st.toast(msg)
 
         # ===== 최근 좋아요 표시 =====
         if "last_liked" in st.session_state:
