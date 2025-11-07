@@ -1,7 +1,6 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-import home
-import survey
+import home, survey, recommend, chatbot
 import json
 import os, sys
 from sentence_transformers import SentenceTransformer
@@ -16,7 +15,7 @@ from user_vector_generator import generate_user_vector_from_resources
 # ✅ 최초 1회만 로드 (session_state 방식)
 # ==============================
 if "init_done" not in st.session_state:
-    with st.spinner("🔄 모델 및 데이터 초기 로드 중... 잠시만 기다려주세요."):
+    with st.spinner("모델 및 데이터 초기 로드 중... 잠시만 기다려주세요."):
         PRODUCTS_PATH = os.path.join(BASE_DIR, "data", "products_vector.json")
         NODE_PATH = os.path.join(BASE_DIR, "data", "nodes_191120.csv")
         EMBED_PATH = os.path.join(BASE_DIR, "data", "FlavorGraph Node Embedding.pickle")
@@ -46,8 +45,6 @@ if "init_done" not in st.session_state:
             "node_embeds": node_embeds,
         })
 
-    st.success("✅ 초기 로드 완료!")
-
 # 이후 실행에서는 그대로 재사용
 model = st.session_state.model
 ingredient_name_to_vec = st.session_state.ingredient_name_to_vec
@@ -60,25 +57,29 @@ node_embeds = st.session_state.node_embeds
 # ==============================
 # ✅ 사이드바 메뉴
 # ==============================
+sidebar_bg = """
+<style>
+[data-testid="stSidebar"] {
+    background-color: #20314e;
+}
+</style>
+"""
+st.markdown(sidebar_bg, unsafe_allow_html=True)
+
+logo_path = os.path.join(os.path.dirname(__file__), "YOUME_logo.png")
+
 with st.sidebar:
-    choice = option_menu(
-        "YOUME",
-        ["시작", "내 입맛 찾기", "내 레시피 만들기", "설정"],
-        icons=['bi bi-house-fill', 'bi bi-clipboard2-x-fill', 'bi bi-gear-fill', 'bi bi-graph-up'],
+    st.image(logo_path, width=120)
+    choice = option_menu("", ["시작", "내 입맛 찾기","상품추천","챗봇"],        icons=['bi bi-house-fill', 'bi bi-clipboard2-x-fill', 'bi bi-gear-fill', 'bi bi-graph-up'],
         menu_icon="bi bi-pin-angle-fill",
         default_index=0,
         styles={
-            "container": {"padding": "5!important", "background-color": "#FFFFFF"},
-            "icon": {"color": "black", "font-size": "15px"},
-            "nav-link": {
-                "font-size": "15px",
-                "text-align": "left",
-                "margin": "0px",
-                "--hover-color": "#eee",
-            },
-            "nav-link-selected": {"background-color": "#8DBBD3"},
-            "menu-title": {"font-size": "15px"},
-            "menu-icon": {"font-size": "15px"},
+                "container": {"padding": "5!important", "background-color": "#20314e", "border-radius": "0px!important" },
+                "icon": {"color": "#fe9600", "font-size": "15px"},
+                "nav-link": {"font-size": "15px", "text-align": "left", "margin":"0px", "--hover-color": "#2a3f5f", "color": "#ffffff"},
+                "nav-link-selected": {"background-color": "#2a3f5f", "color": "#ffffff"},
+                "menu-title": {"font-size": "15px", "color": "#ffffff"},
+                "menu-icon": {"font-size": "15px", "color": "#fe9600"}
         },
     )
 
@@ -97,3 +98,7 @@ elif choice == "내 입맛 찾기":
         node_names=node_names,
         node_embeds=node_embeds,
     )
+elif choice == "상품추천":
+    recommend.run_recommend()
+elif choice == "챗봇":
+    chatbot.run_chatbot()
