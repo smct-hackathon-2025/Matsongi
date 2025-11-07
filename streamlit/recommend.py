@@ -181,19 +181,26 @@ def run_recommend():
                         """,
                         unsafe_allow_html=True,
                     )
-                    st.markdown(
-                        f"""
-                        <div style="text-align:center;">
-                            <a href="{product['url']}" target="_blank"
-                            style="background:#fe9600;color:white;padding:10px 24px;
-                                    border-radius:25px;text-decoration:none;font-weight:bold;
-                                    display:inline-block;transition:all 0.3s;">
+                    button_key = f"buy_button_{rank}_{name.replace(' ', '_')}"
+
+                    if st.button("♥️ 관심 있어요!", key=button_key, use_container_width=True):
+                        try:
+                            slackbot.send_slack_message(f"🛍️ 사용자가 '{name}' 구매 버튼 클릭! 링크: {product['url']}")
+                        except Exception as e:
+                            st.warning(f"Slack 알림 전송 실패: {e}")
+                        st.markdown(
+                            f"""
+                            <div style="text-align:center; margin-top: 10px;">
+                                <a href="{product['url']}" target="_blank"
+                                   style="background:#fe9600;color:white;padding:10px 24px;
+                                          border-radius:25px;text-decoration:none;font-weight:bold;
+                                          display:inline-block;transition:all 0.3s;">
                                     🛒 구매하러 가기
-                            </a>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
+                                </a>
+                            </div>
+                            """,
+                            unsafe_allow_html=True,
+                        )
 
                 with col_img:
                     if img_url:
@@ -208,14 +215,6 @@ def run_recommend():
                 # 구분선
                 st.markdown("<hr style='margin:20px 0;border:1px solid #e0e0e0;'>", unsafe_allow_html=True)
 
-
-        # ===== 최근 좋아요 표시 =====
-        if "last_liked" in st.session_state:
-            st.markdown(
-                f"<p style='text-align:center;color:#fe9600;font-weight:bold;'>"
-                f"💖 최근 좋아요한 상품: {st.session_state['last_liked']}</p>",
-                unsafe_allow_html=True,
-            )
 
         # ===== 하단 버튼 =====
         st.markdown("---")
