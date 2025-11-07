@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 from sklearn.decomposition import PCA
 import re
+import streamlit as st
+
 
 # 폰트 설정
 def load_korean_font():
@@ -37,7 +39,9 @@ def clean_name(name: str) -> str:
 # PCA 시각화
 def plot_user_taste_map(user_data, products, survey, font_prop, bold_font_prop, output_path):
     user_vector = np.array(user_data["user_taste_vector"])
-    user_id = user_data["user_id"]
+    # user_id = user_data["user_id"]
+    user_id = st.session_state.get('user_id', 'user_1')
+    user_name = st.session_state.user_name if 'user_name' in st.session_state else user_id
 
     target_dim = user_vector.shape[0]
 
@@ -86,7 +90,7 @@ def plot_user_taste_map(user_data, products, survey, font_prop, bold_font_prop, 
     # 사용자 벡터 표시
     ax.scatter(user_vector_2d[0], user_vector_2d[1],
                c="#2b6ae0", marker="s", s=150,
-               label=f"나: {user_id}", edgecolors="#1c2445", linewidth=1)
+               label=f"나: {user_name}", edgecolors="#1c2445", linewidth=1)
 
     # 평가한 상품 라벨 표시
     if rated_indices:
@@ -95,7 +99,7 @@ def plot_user_taste_map(user_data, products, survey, font_prop, bold_font_prop, 
             ax.text(product_vectors_2d[i, 0] + 0.01, product_vectors_2d[i, 1] + 0.01,
                     simple_name, fontsize=12, color="#333333", fontproperties=font_prop)
 
-    ax.set_title(f"'{user_id}'의 미각 지도 ({target_dim}D → 2D PCA)",
+    ax.set_title(f"'{user_name}'의 미각 지도 ({target_dim}D → 2D PCA)",
                  fontsize=20, pad=20, fontproperties=bold_font_prop)
 
     legend = ax.legend(fontsize=12, loc="best")
@@ -112,12 +116,12 @@ def plot_user_taste_map(user_data, products, survey, font_prop, bold_font_prop, 
 if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(base_dir, "./data")
-    output_dir = os.path.join(base_dir, ".")
+    output_dir = os.path.join(base_dir, "./data")
 
-    USER_VECTOR_PATH = os.path.join(data_dir, "./user/user_taste_vector.json")
+    USER_VECTOR_PATH = os.path.join(data_dir, "./user/user_1_taste_vector.json")
     PRODUCTS_VECTOR_PATH = os.path.join(data_dir, "products_vector.json")
-    USER_SURVEY_PATH = os.path.join(data_dir, "./user/user_survey.json")
-    MAP_OUTPUT_PATH = os.path.join(output_dir, "user_taste_map.png")
+    USER_SURVEY_PATH = os.path.join(data_dir, "./user/user_1_survey.json")
+    MAP_OUTPUT_PATH = os.path.join(output_dir, "./user/user_taste_map.png")
 
     font_prop, bold_font_prop = load_korean_font()
     user_data = load_json(USER_VECTOR_PATH)
