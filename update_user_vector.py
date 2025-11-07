@@ -57,10 +57,46 @@ def update_from_chat(user_id, chat_text, alpha=0.2):
     new_vec = (1 - alpha) * user_vec + alpha * pref_vec
     save_user_vector(user_id, new_vec)
     print(f"🧠 [{user_id}] 채팅 '{chat_text}' 반영 → '{pref}' 취향 강화")
+    
+def get_sentiment(response_text: str) -> str:
+    """
+    Bedrock/Lambda 응답 문자열에서 sentiment ('positive', 'negative', 'neutral') 추출
+    """
+    response_text = response_text.lower()
+    if "positive" in response_text:
+        return "positive"
+    elif "negative" in response_text:
+        return "negative"
+    else:
+        return "neutral"
 
-# ==============================
-# 3️⃣ 통합 함수
-# ==============================
+
+def run_update(user_vector, product_vector, sentiment, alpha=0.3):
+    """
+    후기 기반 사용자 벡터 업데이트 로직
+    - user_vector: 기존 사용자 입맛 벡터 (list or np.ndarray)
+    - product_vector: 후기 대상 제품 벡터
+    - sentiment: 'positive' | 'negative' | 'neutral'
+    """
+
+    user_vec = np.array(user_vector, dtype=float)
+    prod_vec = np.array(product_vector, dtype=float)
+
+    if sentiment == "positive":
+        # 긍정 후기는 제품 벡터 쪽으로 조금 이동
+        new_vec = user_vec + alpha * (prod_vec - user_vec)
+    elif sentiment == "negative":
+        # 부정 후기는 반대 방향으로 이동
+        new_vec = user_vec - alpha * (prod_vec - user_vec)
+    else:  # neutral
+        new_vec = user_vec  # 변화 없음
+
+    print(f"🎯 후기 반영 완료: {sentiment} → Δ={alpha}")
+    return new_vec.tolist()
+
+# ---------------------------------------------------------
+# 4️⃣ 통합 엔트리포인트
+# ---------------------------------------------------------
 def update_user_vector(event_type, user_id, data):
     if event_type == "like":
         update_on_like(user_id, data["product_name"])

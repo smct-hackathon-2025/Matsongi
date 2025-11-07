@@ -4,11 +4,10 @@ import json
 import numpy as np
 import os # 파일 저장을 위해
 import re 
-import update_logic 
+import update_user_vector
 
 API_ENDPOINT_URL = "https://j0bzidcs1d.execute-api.us-east-1.amazonaws.com/chat" 
 
-# 2. (가장 중요!) user_1_taste_vector.json 파일의 정확한 경로 설정
 try:
     BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     USER_VECTOR_PATH = os.path.join(BASE_DIR, "data", "user", "user_1_taste_vector.json") 
@@ -22,7 +21,7 @@ except NameError:
     print(f"Warning: __file__ not defined. Using relative path: {USER_VECTOR_PATH}")
 
 
-# --- 헬퍼 함수 (벡터 검색 및 저장) ---
+# (벡터 검색 및 저장)
 
 def find_product_matches_by_name(product_name, products_data):
     """
@@ -47,11 +46,11 @@ def find_product_vector_by_exact_name(product_name, products_data):
     if not products_data:
         return None
     
-    product_name_lower = product_name.lower() # 비교를 위해 소문자로
+    product_name_lower = product_name.lower() 
     
     for product in products_data:
         product_db_name = product.get('name', '').lower()
-        if product_name_lower == product_db_name: # 정확히 일치(==)하는지 확인
+        if product_name_lower == product_db_name: 
             return product.get('product_vector') 
     return None
 
@@ -271,7 +270,6 @@ def run_chatbot():
                     
                     bot_response = ""
                     try:
-                        # 2. API Gateway 호출 (가벼운 요청 -> 503/차원 불일치 오류 해결!)
                         response = requests.post(
                             API_ENDPOINT_URL, 
                             data=json.dumps({"prompt": sentiment_prompt}),
@@ -281,18 +279,14 @@ def run_chatbot():
                         if response.status_code == 200:
                             response_body_text = response.json().get("response", "neutral")
                             
-                            # 3. AI 응답에서 긍/부정 추출 (by update_logic.py)
-                            sentiment = update_logic.get_sentiment(response_body_text)
+                            sentiment = update_user_vector.get_sentiment(response_body_text)
                             
-                            # 4. 벡터 수학 (by update_logic.py)
-                            # (!!!) 모든 계산은 Lambda가 아닌 로컬에서 일어남
-                            new_vector = update_logic.run_update(user_vector, product_vector, sentiment)
+                            new_vector = update_user_vector.run_update(user_vector, product_vector, sentiment)
 
-                            # 5. 로컬 세션 및 파일 저장
                             if isinstance(new_vector, list) and len(new_vector) == len(user_vector):
                                 st.session_state.user_vector = new_vector
                                 save_user_vector(new_vector) 
-                                bot_response = "소중한 후기 감사합니다! 님의 입맛 정보에 반영했어요."
+                                bot_response = "말씀해주신 후기를 바탕으로 입맛 벡터를 업데이트 했어요!"
                             else:
                                 bot_response = "벡터 계산 중 오류가 발생했습니다."
                         
@@ -305,7 +299,6 @@ def run_chatbot():
                     st.markdown(bot_response)
                     st.session_state.messages.append({"role": "assistant", "content": bot_response})
                     
-                    # 상태 초기화
                     st.session_state.chat_mode = "normal" 
                     st.session_state.review_product_context = {"name": None, "vector": None}
 
@@ -355,8 +348,6 @@ def run_chatbot():
                         st.markdown(bot_response)
                 st.session_state.messages.append({"role": "assistant", "content": bot_response})
 
-# 이 파일이 메인으로 실행될 경우(테스트용)
+
 if __name__ == "__main__":
-    
-        
     run_chatbot()
