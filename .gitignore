@@ -1,0 +1,4 @@
+data/images/*.jpg
+api_keys.json
+.venv
+__pycache__/
