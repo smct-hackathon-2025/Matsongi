@@ -6,6 +6,11 @@ import os
 import requests
 from io import BytesIO
 from urllib.parse import unquote
+from recommend_products import (
+    recommend_products,
+    get_latest_user_vector_path,
+    get_active_product_vector_path,
+)
 import slackbot
 
 
@@ -110,49 +115,13 @@ def run_recommend():
 
     st.info(f"✅ 현재 사용 중인 사용자 벡터 파일: `{os.path.basename(user_vec_path)}`")
 
-    # vector_visual.py 돌린 후 결과 이미지 삽입
-    # st.markdown("### 📊 나의 맛 취향 벡터 시각화")
+    use_new = st.toggle(
+        "도전 모드", 
+        value=True,    
+    )
 
-    # # vector_visual.py 실행
-    # vector_script_path = "vector_visual.py"
-    # vector_image_path = "./data/user/user_taste_map.png"
-
-    # # 이전 이미지가 있다면 삭제
-    # if os.path.exists(vector_image_path):
-    #     os.remove(vector_image_path)
-
-    # try:
-    #     # vector_visual.py 실행
-    #     import subprocess
-    #     result = subprocess.run(
-    #         ["python", vector_script_path],
-    #         capture_output=True,
-    #         text=True,
-    #         timeout=30
-    #     )
-        
-    #     if result.returncode == 0:
-    #         # 이미지 생성 성공
-    #         if os.path.exists(vector_image_path):
-    #             st.success("✅ 벡터 시각화 생성이 완료되었습니다!")
-    #             st.image(vector_image_path, use_container_width=True)
-    #         else:
-    #             st.error("❌ 스크립트는 실행되었으나 이미지 파일이 생성되지 않았습니다.")
-    #     else:
-    #         st.error(f"❌ 스크립트 실행 실패:\n{result.stderr}")
-            
-    # except subprocess.TimeoutExpired:
-    #     st.error("❌ 스크립트 실행 시간 초과 (30초)")
-    # except FileNotFoundError:
-    #     st.error(f"❌ {vector_script_path} 파일을 찾을 수 없습니다.")
-    # except Exception as e:
-    #     st.error(f"❌ 오류 발생: {str(e)}")
-    #     # 에러 발생 시에도 기존 이미지가 있다면 표시
-    #     if os.path.exists(vector_image_path):
-    #         st.warning("⚠️ 최신 이미지를 생성하지 못했지만, 이전 이미지를 표시합니다.")
-    #         st.image(vector_image_path, caption="나의 맛 취향 벡터 시각화 (이전 버전)", use_container_width=True)
-
-    # st.markdown("---")
+    active_product_vec = get_active_product_vector_path(use_new=use_new)  # ✅ CHANGED(신규가 기본)
+    st.caption(f"현재 선택된 상품 벡터: `{os.path.basename(active_product_vec)}`")
 
     # 추천 실행 버튼
     if st.button("✨ 추천 결과 불러오기", use_container_width=True):
@@ -170,17 +139,6 @@ def run_recommend():
             except Exception as e:
                 st.error(f"❌ 추천 생성 중 오류 발생: {e}")
                 st.stop()
-
-     # ✅ 좋아요 반영 강도 슬라이더
-    # st.markdown("### 💡 좋아요 반영 강도 설정")
-    # alpha = st.slider(
-    #     "좋아요를 누를 때, 해당 제품의 취향이 얼마나 반영될까요?",
-    #     min_value=0.05,
-    #     max_value=0.35,
-    #     value=0.2,      # 기본값 (중간값 정도)
-    #     step=0.05,
-    #     help="값이 높을수록 새로 좋아한 제품의 맛이 강하게 반영됩니다."
-    # )
 
     # 추천 결과 표시
     if "recommendations" in st.session_state and st.session_state.recommendations:
@@ -236,13 +194,6 @@ def run_recommend():
                         """,
                         unsafe_allow_html=True,
                     )
-                    # 좋아요 버튼 (가운데 정렬)
-                    st.markdown("<div style='height:10px;'></div>", unsafe_allow_html=True)
-                    like_col = st.columns([3, 1, 3])[1]
-                    with like_col:
-                        if st.button("좋아요❤️", key=f"like_{name}"):
-                            msg = update_on_like(USER_ID, name, alpha=0.3)
-                            st.toast(msg)
 
                 with col_img:
                     if img_url:
