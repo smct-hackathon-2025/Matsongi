@@ -50,6 +50,8 @@ def load_vectors():
 def recommend_products(top_k=5):
     """유저 벡터와 상품 벡터 간 코사인 유사도 계산"""
     user_vec, products = load_vectors()
+    print("🔍 첫 상품 키:", products[0].keys())
+    print("🔍 첫 상품 img:", products[0].get("img"))
 
     similarities = []
     for product in products:
@@ -59,7 +61,8 @@ def recommend_products(top_k=5):
             similarities.append({
                 "name": product["name"],
                 "similarity": float(sim),
-                "url": product.get("url", "")
+                "url": product.get("url", ""),
+                "img": product.get("img", None)
             })
         except Exception as e:
             print(f"⚠️ {product.get('name', 'Unknown')} 처리 중 오류: {e}")
@@ -75,3 +78,5 @@ if __name__ == "__main__":
         print(f"{i}. {p['name']} ({p['similarity']:.3f})")
         if p["url"]:
             print(f"   {p['url']}")
+            print("img:", p.get("img"))
+
