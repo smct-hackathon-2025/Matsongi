@@ -74,8 +74,6 @@ def plot_user_taste_hexagon(pref_source: Dict,
                 ha="center", va="center",
                 fontproperties=font_prop, fontsize=10, color="#1c2445")
 
-    ax.set_title("나의 입맛 HEXACO 프로필", fontproperties=bold_font_prop, fontsize=16, pad=20)
-
     if output_path:
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         fig.savefig(output_path, dpi=200, bbox_inches="tight")
