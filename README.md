@@ -35,7 +35,7 @@
 
 * 소개
 * 주요 기능
-* 화면 
+* 아키텍처, 플로우차트, 상세 화면면
 * 설치 및 로컬 실행
 * 상세 로직: Bedrock, Lambda, FlavorGraph, Slackbot
 * 데이터 구조
@@ -59,6 +59,11 @@
 * SlackBot 알림 기능
 
 ---
+## 아키텍처
+<img width="945" height="565" alt="image" src="https://github.com/user-attachments/assets/7a240434-7f45-44d4-b6a7-d665a692b861" />
+
+## 플로우차트
+<img width="490" height="568" alt="image" src="https://github.com/user-attachments/assets/7d79555d-a6ed-4190-ae6a-7608a7cb3550" />
 
 ## 화면
 
