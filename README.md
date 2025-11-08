@@ -19,7 +19,7 @@
     <td style="text-align:center;">팀원</td>
   </tr>
   <tr>
-    <td style="text-align:center;">프로젝트 총괄, 벡터 생성 및 시각화, AWS Lambda/Bedrock 연동, SlackBot 연동 </td>
+    <td style="text-align:center;">벡터 생성 및 시각화, AWS Lambda/Bedrock 연동, SlackBot 연동 </td>
     <td style="text-align:center;">아이디어 제안, 시장 조사, 기획 구체화, pt 자료 제작</td>
     <td style="text-align:center;">FlavorGraph 연동, 벡터 생성, 추천 알고리즘, 데이터 크롤링</td>
     <td style="text-align:center;">Streamlit UI, 설문 로직, 벡터 시각화</td>
